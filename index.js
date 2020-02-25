@@ -1,10 +1,39 @@
-var express = require("express");
-var app = express();
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
 
-bodyParser.urlencoded({ extended: false });
+var bodyParser = require("body-parser"),
+mongoose       = require("mongoose"),
+express        = require("express"),
+app            = express();
+
+// ====================
+// APP CONFIG
+// ====================
+
+mongoose.connect("mongodb://localhost/restful_blog_app", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 app.set("view engine", "ejs");
+app.use(express.static("public")); // can use our custom css
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// ====================
+// DB CONFIG - Schema, Model
+// ====================
+
+var blogSchema = new mongoose.Schema({
+  title: String,
+  image: String,
+  body: String,
+created: {type: Date, default: Date.now}
+});
+
+var Blog = mongoose.model("Blog", blogSchema);
+
+// Blog.create({
+//   title: "SMART goal setting",
+//   image: "https://croi.ie/wp-content/uploads/2018/05/smart-goals-1024x483.png",
+//   body: "Specific, Measurable, Achievable, Relavent, Time-bound",
+// });
 
 
 // ====================
@@ -15,35 +44,41 @@ app.set("view engine", "ejs");
 // 7 RESTful ROUTES
 // ====================
 app.get("/", function(req, res) {
-  res.redirect("post");
+  res.redirect("blog");
 });
 
 // ROUTE 1: INDEX
-app.get("/post", function(req, res) {
-  res.render("post");
+app.get("/blog", function(req, res) {
+  Blog.find({}, function(err, blogs) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("blog", {blogs:blogs});
+    }
+  });
 });
 // ROUTE 2: NEW
-app.get("/post/new", function(req, res) {
+app.get("/blog/new", function(req, res) {
 
 });
 // ROUTE 3: CREATE
-app.post("/post", function(req, res) {
+app.post("/blog", function(req, res) {
 
 });
 // ROUTE 4: SHOW not VIEW
-app.get("/post:id", function(req, res) {
+app.get("/blog:id", function(req, res) {
 
 });
 // ROUTE 5: EDIT
-app.get("/post:id/edit", function(req, res) {
+app.get("/blog:id/edit", function(req, res) {
 
 });
 // ROUTE 6: UPDATE
-app.put("/post:id", function(req, res) {
+app.put("/blog:id", function(req, res) {
 
 });
 // ROUTE 7: DESTROY
-app.delete("/post:id", function(req, res) {
+app.delete("/blog:id", function(req, res) {
 
 });
 
